@@ -97,10 +97,13 @@ ext.pomConfiguration = {
 install {
 	repositories.mavenInstaller {
 		pom.project pomConfiguration
+		pom.whenConfigured { pom ->
+			pom.dependencies.findAll { it.groupId == 'org.gradle.api.plugins' && it.artifactId == 'gradle-gae-plugin' }*.scope = 'provided'
+		}
 	}
 }
 
-if (hasProperty('mavenCentralUsername') && hasProperty('mavenCentralPassword')) {
+if (hasProperty('sonatypeUsername') && hasProperty('sonatypePassword')) {
 	apply plugin: 'signing'
 
 	signing {
@@ -116,12 +119,12 @@ if (hasProperty('mavenCentralUsername') && hasProperty('mavenCentralPassword')) 
 			name = 'mavenCentralReleaseDeployer'
 
 			repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2/') {
-				authentication(userName: mavenCentralUsername, password: mavenCentralPassword)
+				authentication(userName: sonatypeUsername, password: sonatypePassword)
 				releases(updatePolicy: 'always')
 			}
 
 			snapshotRepository(url: 'https://oss.sonatype.org/content/repositories/snapshots/') {
-				authentication(userName: mavenCentralUsername, password: mavenCentralPassword)
+				authentication(userName: sonatypeUsername, password: sonatypePassword)
 				releases(updatePolicy: 'always')
 			}
 
