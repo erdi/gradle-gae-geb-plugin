@@ -22,17 +22,110 @@ task wrapper(type: Wrapper) {
 }
 
 idea.project {
-    jdkName = '1.6'
+	jdkName = '1.6'
 
-    ipr.withXml { provider ->
-        def node = provider.asNode()
+	ipr.withXml { provider ->
+		def node = provider.asNode()
 
-        // Use GIT
-        def vcsConfig = node.component.find { it.'@name' == 'VcsDirectoryMappings' }
-        vcsConfig.mapping[0].'@vcs' = 'Git'
+		// Use GIT
+		def vcsConfig = node.component.find { it.'@name' == 'VcsDirectoryMappings' }
+		vcsConfig.mapping[0].'@vcs' = 'Git'
 
-        // Set Gradle home
-        def gradleSettings = node.appendNode('component', [name: 'GradleSettings'])
-        gradleSettings.appendNode('option', [name: 'SDK_HOME', value: gradle.gradleHomeDir])
-    }
+		// Set Gradle home
+		def gradleSettings = node.appendNode('component', [name: 'GradleSettings'])
+		gradleSettings.appendNode('option', [name: 'SDK_HOME', value: gradle.gradleHomeDir])
+	}
+}
+
+jar {
+	manifest {
+		attributes 'Implementation-Title': 'Gradle GAE Geb integration plugin',
+				'Implementation-Version': version,
+				'Built-By': System.getProperty('user.name'),
+				'Built-Date': new Date(),
+				'Built-JDK': System.getProperty('java.version'),
+				'Built-Gradle': gradle.gradleVersion
+	}
+}
+
+task sourcesJar(type: Jar) {
+	description 'An archive of the source code for Maven Central'
+	classifier 'sources'
+	from sourceSets.main.allSource
+}
+
+task groovydocJar(type: Jar, dependsOn: groovydoc) {
+	description 'An archive of the GroovyDocs for Maven Central'
+	classifier 'javadoc'
+	from groovydoc.destinationDir
+}
+
+artifacts {
+	archives sourcesJar
+	archives groovydocJar
+}
+
+ext.pomConfiguration = {
+	name 'Gradle GAE Geb integration plugin'
+	description 'Simple Gradle plugin that provides integration between Gradle GAE plugin and Geb browser automation framework.'
+	url 'https://github.com/erdi/gradle-gae-geb-plugin'
+	inceptionYear '2012'
+
+	scm {
+		url 'https://github.com/erdi/gradle-gae-geb-plugin'
+		connection 'scm:git://github.com/erdi/gradle-gae-geb-plugin.git'
+		developerConnection 'scm:git@github.com:erdi/gradle-gae-geb-plugin.git'
+	}
+
+	licenses {
+		license {
+			name 'The Apache Software License, Version 2.0'
+			url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+			distribution 'repo'
+		}
+	}
+
+	developers {
+		developer {
+			id 'erdi'
+			name 'Marcin Erdmann'
+			email 'marcin.erdmann@proxerd.pl'
+		}
+	}
+}
+
+install {
+	repositories.mavenInstaller {
+		pom.project pomConfiguration
+	}
+}
+
+if (hasProperty('mavenCentralUsername') && hasProperty('mavenCentralPassword')) {
+	apply plugin: 'signing'
+
+	signing {
+		sign configurations.archives
+	}
+
+	uploadArchives {
+		repositories.mavenDeployer {
+			beforeDeployment { deployment ->
+				signing.signPom(deployment)
+			}
+
+			name = 'mavenCentralReleaseDeployer'
+
+			repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2/') {
+				authentication(userName: mavenCentralUsername, password: mavenCentralPassword)
+				releases(updatePolicy: 'always')
+			}
+
+			snapshotRepository(url: 'https://oss.sonatype.org/content/repositories/snapshots/') {
+				authentication(userName: mavenCentralUsername, password: mavenCentralPassword)
+				releases(updatePolicy: 'always')
+			}
+
+			pom.project pomConfiguration
+		}
+	}
 }
