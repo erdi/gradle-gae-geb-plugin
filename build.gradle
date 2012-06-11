@@ -13,8 +13,12 @@ repositories {
 }
 
 dependencies {
-	compile gradleApi(), 'org.gradle.api.plugins:gradle-gae-plugin:0.7.2'
 	groovy localGroovy()
+	compile gradleApi(), 'org.gradle.api.plugins:gradle-gae-plugin:0.7.2',
+			'org.codehaus.geb:geb-core:0.7.0'
+	testCompile('org.spockframework:spock-core:0.6-groovy-1.8') {
+		exclude group: 'org.codehaus.groovy', module: 'groovy-all'
+	}
 }
 
 task wrapper(type: Wrapper) {

@@ -23,6 +23,7 @@ import org.gradle.api.execution.TaskExecutionGraph
 import org.gradle.api.plugins.gae.GaePluginConvention
 import org.gradle.api.Task
 import org.gradle.api.tasks.testing.Test
+import geb.buildadapter.SystemPropertiesBuildAdapter
 
 class GaeGebPlugin implements Plugin<Project> {
 
@@ -30,7 +31,8 @@ class GaeGebPlugin implements Plugin<Project> {
 		project.gradle.taskGraph.whenReady { TaskExecutionGraph taskGraph ->
 			GaePluginConvention convention = project.convention.plugins.gae
 			taskGraph.allTasks.findAll { Task task -> task.name == GaePlugin.GAE_FUNCTIONAL_TEST }.each { Test test ->
-				test.systemProperty('geb.build.baseUrl', "http://localhost:${convention.httpPort}/")
+				def url = "http://localhost:${convention.httpPort}/"
+				test.systemProperty(SystemPropertiesBuildAdapter.BASE_URL_PROPERTY_NAME, url)
             }
 		}
 	}
