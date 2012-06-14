@@ -1,12 +1,22 @@
 apply plugin: 'idea'
 apply plugin: 'groovy'
-apply plugin: 'maven'
+apply plugin: 'nexus'
 
 def compatibilityVersion = 1.5
 sourceCompatibility = compatibilityVersion
 targetCompatibility = compatibilityVersion
 group = 'org.gradle.api.plugins'
-version = '0.1-SNAPSHOT'
+version = '0.1'
+
+buildscript {
+	repositories {
+		mavenCentral()
+	}
+
+	dependencies {
+		classpath 'org.gradle.api.plugins:gradle-nexus-plugin:0.1'
+	}
+}
 
 repositories {
 	mavenCentral()
@@ -52,87 +62,35 @@ jar {
 	}
 }
 
-task sourcesJar(type: Jar) {
-	description 'An archive of the source code for Maven Central'
-	classifier 'sources'
-	from sourceSets.main.allSource
-}
-
-task groovydocJar(type: Jar, dependsOn: groovydoc) {
-	description 'An archive of the GroovyDocs for Maven Central'
-	classifier 'javadoc'
-	from groovydoc.destinationDir
-}
-
-artifacts {
-	archives sourcesJar
-	archives groovydocJar
-}
-
-ext.pomConfiguration = {
-	name 'Gradle GAE Geb integration plugin'
-	description 'Simple Gradle plugin that provides integration between Gradle GAE plugin and Geb browser automation framework.'
-	url 'https://github.com/erdi/gradle-gae-geb-plugin'
-	inceptionYear '2012'
-
-	scm {
+modifyPom {
+	project {
+		name 'Gradle GAE Geb integration plugin'
+		description 'Simple Gradle plugin that provides integration between Gradle GAE plugin and Geb browser automation framework.'
 		url 'https://github.com/erdi/gradle-gae-geb-plugin'
-		connection 'scm:git://github.com/erdi/gradle-gae-geb-plugin.git'
-		developerConnection 'scm:git@github.com:erdi/gradle-gae-geb-plugin.git'
-	}
+		inceptionYear '2012'
 
-	licenses {
-		license {
-			name 'The Apache Software License, Version 2.0'
-			url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-			distribution 'repo'
+		scm {
+			url 'https://github.com/erdi/gradle-gae-geb-plugin'
+			connection 'scm:git://github.com/erdi/gradle-gae-geb-plugin.git'
+			developerConnection 'scm:git@github.com:erdi/gradle-gae-geb-plugin.git'
 		}
-	}
 
-	developers {
-		developer {
-			id 'erdi'
-			name 'Marcin Erdmann'
-			email 'marcin.erdmann@proxerd.pl'
-		}
-	}
-}
-
-install {
-	repositories.mavenInstaller {
-		pom.project pomConfiguration
-		pom.whenConfigured { pom ->
-			pom.dependencies.findAll { it.groupId == 'org.gradle.api.plugins' && it.artifactId == 'gradle-gae-plugin' }*.scope = 'provided'
-		}
-	}
-}
-
-if (hasProperty('sonatypeUsername') && hasProperty('sonatypePassword')) {
-	apply plugin: 'signing'
-
-	signing {
-		sign configurations.archives
-	}
-
-	uploadArchives {
-		repositories.mavenDeployer {
-			beforeDeployment { deployment ->
-				signing.signPom(deployment)
+		licenses {
+			license {
+				name 'The Apache Software License, Version 2.0'
+				url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+				distribution 'repo'
 			}
+		}
 
-			name = 'mavenCentralReleaseDeployer'
-
-			repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2/') {
-				authentication(userName: sonatypeUsername, password: sonatypePassword)
-				releases(updatePolicy: 'always')
+		developers {
+			developer {
+				id 'erdi'
+				name 'Marcin Erdmann'
+				email 'marcin.erdmann@proxerd.pl'
 			}
-
-			snapshotRepository(url: 'https://oss.sonatype.org/content/repositories/snapshots/') {
-				authentication(userName: sonatypeUsername, password: sonatypePassword)
-				releases(updatePolicy: 'always')
-			}
-
-			pom.project pomConfiguration
 		}
 	}
+	dependencies.findAll { it.groupId == 'org.gradle.api.plugins' && it.artifactId == 'gradle-gae-plugin' }*.scope = 'provided'
+	dependencies.removeAll(dependencies.findAll { it.scope == 'test' })
 }
