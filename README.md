@@ -14,7 +14,7 @@ This plugin is a simple integration point between [Gradle GAE plugin](https://gi
 		}
 		
 		dependencies {
-			classpath 'org.gradle.api.plugins:gradle-gae-geb-plugin:0.2'
+			classpath 'org.gradle.api.plugins:gradle-gae-geb-plugin:0.3'
 		}
 	}
 	
