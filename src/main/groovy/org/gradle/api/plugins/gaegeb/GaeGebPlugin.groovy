@@ -30,10 +30,9 @@ class GaeGebPlugin implements Plugin<Project> {
 	void apply(Project project) {
 		project.gradle.taskGraph.whenReady { TaskExecutionGraph taskGraph ->
 			GaePluginConvention convention = project.convention.plugins.gae
-			taskGraph.allTasks.findAll { Task task -> task.name == GaePlugin.GAE_FUNCTIONAL_TEST }.each { Test test ->
-				def url = "http://localhost:${convention.httpPort}/"
-				test.systemProperty(SystemPropertiesBuildAdapter.BASE_URL_PROPERTY_NAME, url)
-            }
+			def url = "http://localhost:${convention.httpPort}/"
+			Test gaeFunctionalTest = project.tasks.findByName(GaePlugin.GAE_FUNCTIONAL_TEST)
+			gaeFunctionalTest.systemProperty(SystemPropertiesBuildAdapter.BASE_URL_PROPERTY_NAME, url)
 		}
 	}
 }
