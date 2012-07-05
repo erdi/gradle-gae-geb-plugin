@@ -2,7 +2,7 @@
 
 This plugin is a simple integration point between [Gradle GAE plugin](https://github.com/bmuschko/gradle-gae-plugin) and [Geb browser automation framework](http://www.gebish.org/). It doesn't provide any new tasks but only sets Geb's `baseUrl` configuration property based on Gradle GAE plugin's conventions using `SystemPropertiesBuildAdapter` mechanism.
 
-#Usage
+## Usage
 
 **IMPORTANT:** Using this plugin only makes sense when **Gradle GAE plugin is applied to the project**. Please make sure that this is the case before applying this plugin to your project.
 
@@ -14,7 +14,7 @@ This plugin is a simple integration point between [Gradle GAE plugin](https://gi
 		}
 		
 		dependencies {
-			classpath 'org.gradle.api.plugins:gradle-gae-geb-plugin:0.1'
+			classpath 'org.gradle.api.plugins:gradle-gae-geb-plugin:0.2'
 		}
 	}
 	
