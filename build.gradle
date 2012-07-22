@@ -1,6 +1,7 @@
 apply plugin: 'idea'
 apply plugin: 'groovy'
 apply plugin: 'nexus'
+apply plugin: 'codenarc'
 
 def compatibilityVersion = 1.5
 sourceCompatibility = compatibilityVersion
@@ -24,11 +25,12 @@ repositories {
 
 dependencies {
 	groovy localGroovy()
-	compile gradleApi(), 'org.gradle.api.plugins:gradle-gae-plugin:0.7.2',
+	compile gradleApi(), 'org.gradle.api.plugins:gradle-gae-plugin:0.7.5',
 			'org.codehaus.geb:geb-core:0.7.0'
 	testCompile('org.spockframework:spock-core:0.6-groovy-1.8') {
 		exclude group: 'org.codehaus.groovy', module: 'groovy-all'
 	}
+	codenarc 'org.codenarc:CodeNarc:0.17'
 }
 
 task wrapper(type: Wrapper) {
@@ -93,4 +95,8 @@ modifyPom {
 	}
 	dependencies.findAll { it.groupId == 'org.gradle.api.plugins' && it.artifactId == 'gradle-gae-plugin' }*.scope = 'provided'
 	dependencies.removeAll(dependencies.findAll { it.scope == 'test' })
+}
+
+codenarc {
+	configFile = file('config/codenarc/rulesets.groovy')
 }
