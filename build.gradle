@@ -33,10 +33,6 @@ dependencies {
 	codenarc 'org.codenarc:CodeNarc:0.17'
 }
 
-task wrapper(type: Wrapper) {
-	gradleVersion = "1.0-rc-3"
-}
-
 idea.project {
 	jdkName = '1.6'
 
