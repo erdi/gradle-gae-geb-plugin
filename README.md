@@ -1,4 +1,4 @@
-# Gradle GAE Geb plugin
+# Gradle GAE Geb plugin [![Build Status](https://buildhive.cloudbees.com/job/erdi/job/gradle-gae-geb-plugin/badge/icon)](https://buildhive.cloudbees.com/job/erdi/job/gradle-gae-geb-plugin/)
 
 This plugin is a simple integration point between [Gradle GAE plugin](https://github.com/bmuschko/gradle-gae-plugin) and [Geb browser automation framework](http://www.gebish.org/). It doesn't provide any new tasks but only sets Geb's `baseUrl` configuration property based on Gradle GAE plugin's conventions using `SystemPropertiesBuildAdapter` mechanism.
 
